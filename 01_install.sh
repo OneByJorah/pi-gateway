@@ -30,12 +30,12 @@ AP_COUNTRY="US"           # ← Set your 2-letter country code (regulatory domai
 
 WARP_MTU=1280
 DASHBOARD_PORT=5000
-BOT_TOKEN=""            # Set after install or in /etc/pi-gateway/config.env
+BOT_TOKEN=""            # Set after install or in /etc/EdgeGateway/config.env
 ADMIN_CHAT_ID=""        # Your Telegram chat ID
 
 # ── Persist config ────────────────────────────────────────
-mkdir -p /etc/pi-gateway
-cat > /etc/pi-gateway/config.env <<EOF
+mkdir -p /etc/EdgeGateway
+cat > /etc/EdgeGateway/config.env <<EOF
 AP_IFACE=$AP_IFACE
 WAN_IFACE=$WAN_IFACE
 AP_SSID=$AP_SSID
@@ -51,7 +51,7 @@ DASHBOARD_PORT=$DASHBOARD_PORT
 BOT_TOKEN=$BOT_TOKEN
 ADMIN_CHAT_ID=$ADMIN_CHAT_ID
 EOF
-ok "Config written to /etc/pi-gateway/config.env"
+ok "Config written to /etc/EdgeGateway/config.env"
 
 # ── System update ─────────────────────────────────────────
 info "Updating system..."
@@ -83,9 +83,9 @@ ok "Cloudflare WARP installed"
 
 # ── Python venv for dashboard + bot ──────────────────────
 info "Setting up Python environment..."
-python3 -m venv /opt/pi-gateway/venv
-/opt/pi-gateway/venv/bin/pip install -q --upgrade pip
-/opt/pi-gateway/venv/bin/pip install -q \
+python3 -m venv /opt/EdgeGateway/venv
+/opt/EdgeGateway/venv/bin/pip install -q --upgrade pip
+/opt/EdgeGateway/venv/bin/pip install -q \
     flask flask-socketio \
     python-telegram-bot==20.8 \
     psutil requests \
@@ -94,7 +94,7 @@ ok "Python environment ready"
 
 # ── Copy app files ────────────────────────────────────────
 info "Installing gateway app files..."
-mkdir -p /opt/pi-gateway/{templates,static}
+mkdir -p /opt/EdgeGateway/{templates,static}
 # (Files will be copied by 02_configure.sh)
 
 # ── Enable IP forwarding ──────────────────────────────────
@@ -215,7 +215,7 @@ echo "  AP Pass   : $AP_PASS"
 echo "  AP IP     : $AP_IP"
 echo ""
 echo "  Next steps:"
-echo "  1. Edit /etc/pi-gateway/config.env → add BOT_TOKEN + ADMIN_CHAT_ID"
+echo "  1. Edit /etc/EdgeGateway/config.env → add BOT_TOKEN + ADMIN_CHAT_ID"
 echo "  2. Run: sudo bash 02_configure.sh"
 echo "  3. Reboot: sudo reboot"
 echo ""

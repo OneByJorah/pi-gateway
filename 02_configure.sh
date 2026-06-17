@@ -10,17 +10,17 @@ ok()   { echo -e "${GREEN}[OK]${NC} $1"; }
 die()  { echo -e "${RED}[ERR]${NC} $1"; exit 1; }
 
 [[ $EUID -ne 0 ]] && die "Run as root: sudo bash 02_configure.sh"
-source /etc/pi-gateway/config.env
+source /etc/EdgeGateway/config.env
 
-APP_DIR=/opt/pi-gateway
+APP_DIR=/opt/EdgeGateway
 VENV=$APP_DIR/venv
 
 # ── Validate required config ───────────────────────────────
 if [[ -z "$BOT_TOKEN" ]]; then
-    die "BOT_TOKEN is empty. Edit /etc/pi-gateway/config.env first."
+    die "BOT_TOKEN is empty. Edit /etc/EdgeGateway/config.env first."
 fi
 if [[ -z "$ADMIN_CHAT_ID" ]]; then
-    die "ADMIN_CHAT_ID is empty. Edit /etc/pi-gateway/config.env first."
+    die "ADMIN_CHAT_ID is empty. Edit /etc/EdgeGateway/config.env first."
 fi
 
 # ── WARP watchdog script ──────────────────────────────────
@@ -52,7 +52,7 @@ cat > /usr/local/bin/gw-stats.sh <<'STATS'
 set -o pipefail
 
 # Source config for interface names
-source /etc/pi-gateway/config.env 2>/dev/null
+source /etc/EdgeGateway/config.env 2>/dev/null
 
 # Fallback defaults if config didn't load
 : "${WAN_IFACE:=eth0}"
@@ -254,7 +254,7 @@ BOT_TOKEN    = os.environ.get("BOT_TOKEN", "")
 ADMIN_IDS    = [int(x) for x in os.environ.get("ADMIN_CHAT_ID", "").split(",") if x.strip()]
 
 if not BOT_TOKEN:
-    raise SystemExit("BOT_TOKEN not set! Edit /etc/pi-gateway/config.env")
+    raise SystemExit("BOT_TOKEN not set! Edit /etc/EdgeGateway/config.env")
 
 if not ADMIN_IDS:
     logger.warning("ADMIN_CHAT_ID is empty — no users will have admin access!")
@@ -392,7 +392,7 @@ After=network.target warp-svc.service
 [Service]
 User=root
 WorkingDirectory=$APP_DIR
-EnvironmentFile=/etc/pi-gateway/config.env
+EnvironmentFile=/etc/EdgeGateway/config.env
 ExecStart=$VENV/bin/python $APP_DIR/dashboard.py
 Restart=always
 RestartSec=5
@@ -410,7 +410,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=$APP_DIR
-EnvironmentFile=/etc/pi-gateway/config.env
+EnvironmentFile=/etc/EdgeGateway/config.env
 ExecStart=$VENV/bin/python $APP_DIR/bot.py
 Restart=always
 RestartSec=10
