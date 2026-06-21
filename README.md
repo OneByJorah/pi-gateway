@@ -1,6 +1,6 @@
-# EdgeGateway (EdgeGateway)
+# EdgeGateway — Cloudflare WARP Edge Gateway
 
-**Version:** v0.1  
+**Version:** v1.0  
 **Status:** Active Development  
 **Repository:** https://github.com/OneByJorah/EdgeGateway
 
@@ -24,34 +24,37 @@
 
 ## Overview
 
-Cloudflare WARP / edge gateway setup for Raspberry Pi and home network tunneling.
+EdgeGateway deploys Cloudflare WARP on edge devices (Raspberry Pi and Linux hosts) to provide secure tunneling, DNS privacy, and outbound proxy functionality. The repository includes a lightweight dashboard for monitoring WARP state and a two-step installer/bootstrap flow.
 
 ---
 
 ## Architecture
 
-Client → Local service (`EdgeGateway`) → data/processing modules → output/api layer.
-Secrets and environment configuration are managed via environment files with restrictive permissions.
+Host (Linux/arm64) → Cloudflare WARP client (`warp-svc`) → Internet. Dashboard template (`templates/dashboard.html`) provides local visibility into connection state.
+
+Setup stages:
+1. `01_install.sh` — installs the WARP client and dependencies.
+2. `02_configure.sh` — registers the client and configures routing/mode.
 
 ---
 
 ## Technology Stack
 
-|| Layer | Stack |
+| Layer | Stack |
 |---|---|
-| Runtime | Linux (Ubuntu 22.04+) |
-| Primary Stack | Bash / Cloudflare WARP |
+| Runtime | Linux (Ubuntu 22.04+, Raspberry Pi OS) |
+| Provisioning | Bash / Cloudflare WARP |
+| Frontend | HTML5 Dashboard (`templates/dashboard.html`) |
 | VCS | Git + GitHub (`github.com/OneByJorah/EdgeGateway`) |
-| Dev Port | Localhost / systemd service |
 
 ---
 
 ## Features
 
-- Operational dashboard and monitoring (per repo).
-- Exportable data / reports where supported.
-- Extensible service-based design.
-- Dark-themed UI where applicable.
+- **One-click WARP setup**: install and register scripts included.
+- **Edge-friendly**: targets Raspberry Pi and low-power ARM hosts.
+- **Local dashboard**: lightweight HTML status view.
+- **Reusable templates**: `templates/dashboard.html` ready for extension.
 
 ---
 
@@ -62,24 +65,27 @@ Secrets and environment configuration are managed via environment files with res
 git clone https://github.com/OneByJorah/EdgeGateway.git
 cd EdgeGateway
 
-# 2. Install dependencies
-# (see specific subproject docs)
+# 2. Install WARP + dependencies (run as root)
+sudo ./01_install.sh
 
-# 3. Start the service
-# (see Service Management below)
+# 3. Configure and register
+sudo ./02_configure.sh
 ```
+
+> These scripts are intended for clean Debian/Ubuntu-based Linux systems.
+> Review scripts before running on production devices.
 
 ---
 
 ## Service Management
 
+WARP runs as a system-managed service after registration. Check status:
+
 ```bash
-# Start the service (example)
-sudo systemctl start EdgeGateway.service
-sudo systemctl enable EdgeGateway.service
+sudo warp-cli status
 ```
 
-Access the service via your configured localhost port or reverse proxy.
+Dashboard access depends on how the template is served (simple static hosting or integrated into a local web service).
 
 ---
 
@@ -87,25 +93,28 @@ Access the service via your configured localhost port or reverse proxy.
 
 ```
 EdgeGateway/
+├── 01_install.sh
+├── 02_configure.sh
 ├── README.md
-├── (additional project files)
+├── screenshot-dashboard.png
+└── templates/
+    └── dashboard.html
 ```
 
 ---
 
 ## Screenshots
 
-All screenshots are live captures from the local dev instance.
-
-_(Screenshots will be added after build/run capture.)_
+### EdgeGateway Dashboard
+![EdgeGateway Dashboard](screenshot-dashboard.png)
 
 ---
 
 ## Contributing
 
 1. Create a feature branch off `main`.
-2. Follow the existing code style.
-3. Submit a PR with description and screenshots for UI changes.
+2. Keep provisioning scripts POSIX-sh compatible where possible.
+3. Submit a PR with description and screenshots for dashboard changes.
 
 ---
 
